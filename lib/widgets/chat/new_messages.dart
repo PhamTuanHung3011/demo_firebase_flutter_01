@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class NewMessages extends StatefulWidget {
@@ -32,11 +33,13 @@ class _NewMessagesState extends State<NewMessages> {
     User? user = FirebaseAuth.instance.currentUser;
     final userData = await FirebaseFirestore.instance.collection('users').doc(user?.uid).get();
 
+
     FirebaseFirestore.instance.collection('chat').add({
       'text': _controller.text,
       'createdAt': Timestamp.now(),
       'userId': user?.uid,
       'username': userData['username'],
+      'userImage' : userData['image_url'],
     });
     _controller.clear();
   }

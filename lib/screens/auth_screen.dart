@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../widgets/auth/auth_form.dart';
 
@@ -16,8 +20,9 @@ class _AuthScreenState extends State<AuthScreen> {
     String username,
     String email,
     String password,
+    XFile avatar,
     bool signup,
-      BuildContext ctx,
+    BuildContext ctx,
   ) async {
     try {
       if (signup) {
@@ -26,15 +31,25 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         final credential = await _auth.createUserWithEmailAndPassword(
           email: email,
-          password: password,);
-        FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
-          'username': username,
-          'email': email,
+          password: password,
+        );
+
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('image_url')
+            .child('${credential.user!.uid}.jpg');
+        ref.putFile(File(avatar.path)).whenComplete(() async {
+          final url = await ref.getDownloadURL();
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(credential.user?.uid)
+              .set({
+            'username': username,
+            'email': email,
+            'image_url': url,
+          });
         });
-        
-
       }
-
     } on FirebaseAuthException catch (error) {
       var mes = 'An error occurred, please check your credentials';
 
