@@ -102,10 +102,6 @@ class _AuthFormState extends State<AuthForm> {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState?.save();
                           widget.submitFn(_username.trim(), _email.trim(), _password.trim(), _signup, context);
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(content: Text('Sign up success!')),
-                          // );
-
                         }
                       },
                       child: Text(_signup ? 'Log in' : 'Sign Up!'),),

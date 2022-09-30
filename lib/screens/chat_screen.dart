@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demo_firebase_flutter/widgets/chat/new_messages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/chat/message_widget.dart';
 
 class ChatScreen extends StatelessWidget {
   @override
@@ -24,7 +27,7 @@ class ChatScreen extends StatelessWidget {
               )
             ],
             onChanged: (Object? value) {
-              if(value == 'logout') {
+              if (value == 'logout') {
                 FirebaseAuth.instance.signOut();
               }
             },
@@ -32,35 +35,13 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('chats/TFDyVjrApWOaZi7qbpz5/messages')
-              .snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final doc = snapshot.data.docs;
-            return ListView.builder(
-              itemCount: doc.length,
-              itemBuilder: (ctx, index) => Container(
-                child: Text(doc[index]['text']),
-              ),
-            );
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children:  <Widget>[
+            Expanded(child: Messages()),
+            NewMessages(),
+          ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FirebaseFirestore.instance
-              .collection('chats/TFDyVjrApWOaZi7qbpz5/messages')
-              .add({
-            'text': 'more add',
-          });
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

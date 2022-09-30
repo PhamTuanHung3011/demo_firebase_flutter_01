@@ -20,18 +20,19 @@ class _AuthScreenState extends State<AuthScreen> {
       BuildContext ctx,
   ) async {
     try {
-      if (!signup) {
-        final credential = await _auth.createUserWithEmailAndPassword(
-            email: email,
-            password: password,);
-      } else {
+      if (signup) {
         final credential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
-        
-        FirebaseFirestore.instance.collection('user').doc(credential.user?.uid).set({
+      } else {
+        final credential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,);
+        FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
           'username': username,
           'email': email,
         });
+        
+
       }
 
     } on FirebaseAuthException catch (error) {
